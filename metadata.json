@@ -1,6 +1,6 @@
 {
-  "name": "Eddie's iPhone Duo Tracker",
-  "description": "Live real-time counter tracking how long it has been since Eddie ordered his iPhone Duo on October 16, 2026 at 08:04 EST without receiving it.",
+  "name": "Eddie's iPhone Duo - Delivered!",
+  "description": "Eddie has finally taken possession of his iPhone Duo! Complete archive of the 24-day wait, final delivery timestamp, and live possession timer.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -7,32 +7,34 @@ import { MilestoneTimeline } from './components/MilestoneTimeline';
 import { SympathyWall } from './components/SympathyWall';
 import { CertificateModal } from './components/CertificateModal';
 import { Footer } from './components/Footer';
+import { ConfettiCanvas } from './components/ConfettiCanvas';
 import {
-  START_TIME_EDT,
-  START_TIME_EST_STRICT,
-  getTimeBreakdown,
+  getFinalWaitBreakdown,
+  getPossessionBreakdown,
 } from './utils/timeCalculations';
 import { audioTicker } from './utils/audioTicker';
 
 export default function App() {
-  const [useStrictEST, setUseStrictEST] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isCertificateOpen, setIsCertificateOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [copyToast, setCopyToast] = useState<string | null>(null);
+  const [confettiTrigger, setConfettiTrigger] = useState(1);
 
-  const startTimeISO = useStrictEST ? START_TIME_EST_STRICT : START_TIME_EDT;
+  // Final recorded wait duration (24 days, 7 hours, 44 minutes)
+  const waitRecord = useMemo(() => getFinalWaitBreakdown(), []);
 
-  const [timeData, setTimeData] = useState(() => getTimeBreakdown(startTimeISO, new Date()));
+  // Live Possession Clock (time since Eddie received it)
+  const [possessionTime, setPossessionTime] = useState(() => getPossessionBreakdown());
 
-  // High precision timer loop (approx 30fps / every 30ms for smooth millisecond updates)
+  // Smooth live tick loop
   useEffect(() => {
     let animId: number;
     const update = () => {
       const now = new Date();
-      const updated = getTimeBreakdown(startTimeISO, now);
-      setTimeData(updated);
+      const updated = getPossessionBreakdown(now);
+      setPossessionTime(updated);
 
       if (audioEnabled) {
         audioTicker.tick(updated.seconds);
@@ -43,15 +45,15 @@ export default function App() {
 
     animId = requestAnimationFrame(update);
     return () => cancelAnimationFrame(animId);
-  }, [startTimeISO, audioEnabled]);
-
-  const handleToggleTimezone = () => {
-    setUseStrictEST((prev) => !prev);
-  };
+  }, [audioEnabled]);
 
   const handleToggleAudio = () => {
     const next = audioTicker.toggle();
     setAudioEnabled(next);
+  };
+
+  const handleCelebrate = () => {
+    setConfettiTrigger((prev) => prev + 1);
   };
 
   const handleToggleFullscreen = () => {
@@ -81,52 +83,55 @@ export default function App() {
   }, []);
 
   const handleShare = useCallback(() => {
-    const summary = `Eddie has been waiting for his iPhone Duo for ${timeData.days} days, ${timeData.hours} hours, ${timeData.minutes} minutes and ${timeData.seconds} seconds since October 16, 2026 at 08:04 EST! #WhereIsEddiesPhone`;
-    
+    const summary = `THE WAIT IS OVER! After 24 days, 7 hours, and 44 minutes, Eddie has finally taken possession of his iPhone Duo on November 9, 2026! #EddiesPhoneArrived`;
+
     if (navigator.clipboard) {
       navigator.clipboard.writeText(summary).then(() => {
         setCopied(true);
-        setCopyToast('Copied live wait time to clipboard!');
+        setCopyToast('Copied arrival announcement to clipboard!');
         setTimeout(() => {
           setCopied(false);
           setCopyToast(null);
         }, 3000);
       });
     }
-  }, [timeData]);
-
-  const startTimeLabel = useMemo(() => {
-    return useStrictEST ? 'Strict EST (UTC-5)' : 'EDT / Eastern Time (UTC-4)';
-  }, [useStrictEST]);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white flex flex-col">
-      {/* Top Header Contract */}
-      <Header onShare={handleShare} copied={copied} />
+    <div className="min-h-screen bg-white text-black font-sans selection:bg-black selection:text-white flex flex-col relative">
+      {/* Monochrome Confetti for celebration */}
+      <ConfettiCanvas trigger={confettiTrigger} />
+
+      {/* Top Header */}
+      <Header
+        onShare={handleShare}
+        copied={copied}
+        onCelebrate={handleCelebrate}
+      />
 
       {/* Main Content */}
       <main className="flex-1">
-        {/* Live Chronometer & Exact User Title */}
+        {/* Triumphant Chronometer: Possession Stopwatch & Wait Archive */}
         <Chronometer
-          timeData={timeData}
-          useStrictEST={useStrictEST}
-          onToggleTimezone={handleToggleTimezone}
+          possessionTime={possessionTime}
+          waitRecord={waitRecord}
           audioEnabled={audioEnabled}
           onToggleAudio={handleToggleAudio}
           isFullscreen={isFullscreen}
           onToggleFullscreen={handleToggleFullscreen}
+          onTriggerConfetti={handleCelebrate}
         />
 
-        {/* Apple Order Status Satire */}
-        <OrderSatireCard timeData={timeData} />
+        {/* Order Delivery Proof & Satirical Resolution */}
+        <OrderSatireCard />
 
-        {/* What could have happened during Eddie's wait */}
-        <RelativeEquivalents totalSeconds={timeData.totalSeconds} />
+        {/* Historical Relativity: What Happened During The Great Wait */}
+        <RelativeEquivalents totalSeconds={waitRecord.totalSeconds} />
 
-        {/* Chronological Milestones */}
-        <MilestoneTimeline timeData={timeData} startTimeISO={startTimeISO} />
+        {/* Complete Timeline: From Order to Arrival */}
+        <MilestoneTimeline />
 
-        {/* Sympathy & Encouragement Messages */}
+        {/* Victory Wall: Congratulate Eddie */}
         <SympathyWall />
       </main>
 
@@ -134,17 +139,17 @@ export default function App() {
       <Footer
         onOpenCertificate={() => setIsCertificateOpen(true)}
         onShare={handleShare}
+        onCelebrate={handleCelebrate}
       />
 
       {/* Official Certificate Modal */}
       <CertificateModal
         isOpen={isCertificateOpen}
         onClose={() => setIsCertificateOpen(false)}
-        timeData={timeData}
-        startTimeLabel={startTimeLabel}
+        waitRecord={waitRecord}
       />
 
-      {/* Floating Copy Notification Toast */}
+      {/* Copy Notification Toast */}
       {copyToast && (
         <div className="fixed bottom-6 right-6 z-50 border-2 border-black bg-black text-white px-5 py-3 text-xs font-mono font-bold shadow-[6px_6px_0px_0px_rgba(0,0,0,0.3)] animate-bounce">
           {copyToast}

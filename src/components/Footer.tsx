@@ -1,12 +1,13 @@
 import React from 'react';
-import { Award, ArrowUp, Share2 } from 'lucide-react';
+import { Award, ArrowUp, Share2, Sparkles } from 'lucide-react';
 
 interface FooterProps {
   onOpenCertificate: () => void;
   onShare: () => void;
+  onCelebrate: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenCertificate, onShare }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenCertificate, onShare, onCelebrate }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -16,23 +17,31 @@ export const Footer: React.FC<FooterProps> = ({ onOpenCertificate, onShare }) =>
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div>
           <div className="text-sm font-bold uppercase tracking-wider text-black">
-            How long it has been since Eddie ordered his iPhone Duo and hasn&apos;t received it yet.
+            The Wait Is Over: Eddie Has Taken Possession of His iPhone Duo
           </div>
           <p className="text-xs font-mono text-neutral-600 mt-1">
-            Official countdown begins from October 16, 2026 at 08:04:00 EST. High-precision live ticker.
+            Ordered October 16, 2026 @ 08:04 EST · Delivered November 9, 2026 @ 14:48 EST.
           </p>
           <p className="text-[11px] font-mono text-neutral-500 mt-0.5">
-            Crafted in black font on white background for ultimate contrast and dedication to Eddie.
+            Preserved in black font on white background in honor of historic electronics patience.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
           <button
+            onClick={onCelebrate}
+            className="flex items-center gap-1.5 border border-black px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-black hover:bg-neutral-100 cursor-pointer transition-colors"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Confetti</span>
+          </button>
+
+          <button
             onClick={onOpenCertificate}
             className="flex items-center gap-1.5 border border-black px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-black hover:bg-neutral-100 cursor-pointer transition-colors"
           >
             <Award className="w-3.5 h-3.5" />
-            <span>Delay Certificate</span>
+            <span>Delivery Certificate</span>
           </button>
 
           <button

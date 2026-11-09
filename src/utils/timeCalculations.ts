@@ -1,14 +1,14 @@
 import { TimeBreakdown } from '../types';
 
-// October 16, 2026 08:04:00 AM EDT (America/New_York is UTC-4 in October)
-export const START_TIME_EDT = '2026-10-16T08:04:00-04:00';
-// Literal EST (UTC-5)
-export const START_TIME_EST_STRICT = '2026-10-16T08:04:00-05:00';
+// Order Placed: October 16, 2026 08:04:00 AM EDT
+export const ORDER_DATE_ISO = '2026-10-16T08:04:00-04:00';
+
+// Delivered & Possession Taken: November 9, 2026 02:48:00 PM EST
+export const DELIVERY_DATE_ISO = '2026-11-09T14:48:00-05:00';
 
 export function calculateBusinessDays(startDate: Date, endDate: Date): number {
   let count = 0;
   const cur = new Date(startDate);
-  // Start from next morning or current day
   cur.setHours(0, 0, 0, 0);
   const end = new Date(endDate);
   end.setHours(0, 0, 0, 0);
@@ -23,9 +23,10 @@ export function calculateBusinessDays(startDate: Date, endDate: Date): number {
   return count;
 }
 
-export function getTimeBreakdown(startTimeISO: string, now: Date = new Date()): TimeBreakdown {
-  const start = new Date(startTimeISO);
-  const diffMs = Math.max(0, now.getTime() - start.getTime());
+export function getFinalWaitBreakdown(): TimeBreakdown {
+  const start = new Date(ORDER_DATE_ISO);
+  const delivery = new Date(DELIVERY_DATE_ISO);
+  const diffMs = Math.max(0, delivery.getTime() - start.getTime());
 
   const totalSeconds = diffMs / 1000;
   const totalMinutes = totalSeconds / 60;
@@ -36,9 +37,40 @@ export function getTimeBreakdown(startTimeISO: string, now: Date = new Date()): 
   const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = Math.floor(totalSeconds % 60);
-  const milliseconds = Math.floor((diffMs % 1000) / 10); // 00-99 hundredths of a second
+  const milliseconds = 0;
 
-  const businessDays = calculateBusinessDays(start, now);
+  const businessDays = calculateBusinessDays(start, delivery);
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+    milliseconds,
+    totalDays,
+    totalHours,
+    totalMinutes,
+    totalSeconds,
+    businessDays,
+  };
+}
+
+export function getPossessionBreakdown(now: Date = new Date()): TimeBreakdown {
+  const delivery = new Date(DELIVERY_DATE_ISO);
+  const diffMs = Math.max(0, now.getTime() - delivery.getTime());
+
+  const totalSeconds = diffMs / 1000;
+  const totalMinutes = totalSeconds / 60;
+  const totalHours = totalMinutes / 60;
+  const totalDays = totalHours / 24;
+
+  const days = Math.floor(totalDays);
+  const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+  const milliseconds = Math.floor((diffMs % 1000) / 10);
+
+  const businessDays = calculateBusinessDays(delivery, now);
 
   return {
     days,
@@ -62,7 +94,7 @@ export interface ActivityEquivalent {
   formulaDescription: string;
 }
 
-export function getRelativeEquivalents(totalSeconds: number): ActivityEquivalent[] {
+export function getFinalEquivalents(totalSeconds: number): ActivityEquivalent[] {
   // Lord of the Rings Extended Trilogy: ~11.4 hours = 41,040 seconds
   const lotr = totalSeconds / 41040;
 
@@ -72,7 +104,7 @@ export function getRelativeEquivalents(totalSeconds: number): ActivityEquivalent
   // Commercial flight around the world: ~45 hours = 162,000 seconds
   const worldFlights = totalSeconds / 162000;
 
-  // Beard growth: ~0.4 mm per day = ~0.00000463 mm per second
+  // Beard growth: ~0.4 mm per day
   const beardGrowthMm = (totalSeconds / 86400) * 0.4;
 
   // Cups of pour-over coffee brewed (1 brew every 5 minutes = 300s)
@@ -81,19 +113,19 @@ export function getRelativeEquivalents(totalSeconds: number): ActivityEquivalent
   // Harry Potter series full audiobook listening (117 hours = 421,200s)
   const harryPotterRuns = totalSeconds / 421200;
 
-  // iPhone 15 battery charge cycles (assume 1 full cycle per 24h = 86,400s)
+  // iPhone battery cycles equivalent
   const batteryCycles = totalSeconds / 86400;
 
-  // Mars voyage percentage (Curiosity took 253 days = 21,859,200 seconds)
+  // Mars voyage percentage
   const marsProgress = (totalSeconds / 21859200) * 100;
 
   return [
     {
       id: 'lotr',
       activity: 'Lord of the Rings (Extended Editions)',
-      unit: 'complete marathons',
+      unit: 'completed marathons',
       count: parseFloat(lotr.toFixed(1)),
-      formulaDescription: 'Based on 11.4 hours for the full Peter Jackson extended cut trilogy',
+      formulaDescription: 'Based on 11.4 hours for the full Peter Jackson extended trilogy',
     },
     {
       id: 'moon',
@@ -111,38 +143,38 @@ export function getRelativeEquivalents(totalSeconds: number): ActivityEquivalent
     },
     {
       id: 'beard',
-      activity: 'Facial Hair Growth',
-      unit: 'millimeters grown',
+      activity: 'Facial Hair Grown',
+      unit: 'millimeters of beard',
       count: parseFloat(beardGrowthMm.toFixed(2)),
       formulaDescription: 'Average human hair grows approx 0.4 mm per 24-hour cycle',
     },
     {
       id: 'coffee',
-      activity: 'Artisanal Pour-Over Coffees',
-      unit: 'cups brewed',
+      activity: 'Artisanal Coffees Brewed',
+      unit: 'cups prepared',
       count: Math.floor(coffees),
-      formulaDescription: 'Allowing 5 minutes for grinding, blooming, and careful extraction',
+      formulaDescription: '5 minutes per pour-over extraction while checking delivery status',
     },
     {
       id: 'harrypotter',
-      activity: 'Complete Harry Potter Series',
-      unit: 'read-throughs',
+      activity: 'Entire Harry Potter Audiobooks',
+      unit: 'series completions',
       count: parseFloat(harryPotterRuns.toFixed(2)),
       formulaDescription: 'Entire 7-book audiobook runtime (117 total listening hours)',
     },
     {
       id: 'battery',
-      activity: 'Standard Smartphone Battery Cycles',
-      unit: 'full 0-100% discharges',
+      activity: 'Full Battery Cycles Elapsed',
+      unit: '0-100% daily charges',
       count: parseFloat(batteryCycles.toFixed(1)),
-      formulaDescription: 'Assumes average daily discharge and recharge cadence',
+      formulaDescription: 'Equivalent battery life on Eddie\'s now-retired old phone',
     },
     {
       id: 'mars',
-      activity: 'Journey to Mars',
-      unit: '% of transit to the Red Planet',
+      activity: 'Transit to Mars',
+      unit: '% of interplanetary flight',
       count: parseFloat(marsProgress.toFixed(2)),
-      formulaDescription: 'Calculated against typical 253-day Hohmann transfer orbit',
+      formulaDescription: 'Curiosity rover 253-day Hohmann transfer orbit baseline',
     },
   ];
 }

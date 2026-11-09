@@ -1,13 +1,13 @@
 import React from 'react';
-import { Compass, Film, Rocket, Coffee, BookOpen, BatteryCharging, Globe2, Sparkles } from 'lucide-react';
-import { getRelativeEquivalents } from '../utils/timeCalculations';
+import { Film, Rocket, Coffee, BookOpen, BatteryCharging, Globe2, Compass, CheckCircle2 } from 'lucide-react';
+import { getFinalEquivalents } from '../utils/timeCalculations';
 
 interface RelativeEquivalentsProps {
   totalSeconds: number;
 }
 
 export const RelativeEquivalents: React.FC<RelativeEquivalentsProps> = ({ totalSeconds }) => {
-  const items = getRelativeEquivalents(totalSeconds);
+  const items = getFinalEquivalents(totalSeconds);
 
   const getIcon = (id: string) => {
     switch (id) {
@@ -32,14 +32,14 @@ export const RelativeEquivalents: React.FC<RelativeEquivalentsProps> = ({ totalS
     <section id="relativity" className="py-12 px-6 max-w-6xl mx-auto border-t border-black">
       <div className="mb-8">
         <div className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-widest text-black mb-2">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Perspective &amp; Relativity</span>
+          <CheckCircle2 className="w-3.5 h-3.5" />
+          <span>Final Historical Tally · The 24-Day Archive</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-black">
-          What Could Have Happened While Eddie Waited
+          What Happened In The World While Eddie Waited
         </h2>
         <p className="text-sm text-neutral-700 mt-1 max-w-2xl">
-          To truly grasp the magnitude of Eddie&apos;s wait since October 16, 2026 at 08:04 EST, here is what humanity and nature have accomplished during the exact same timeframe:
+          Now that Eddie has taken possession of his iPhone Duo, here is the official historical audit of what occurred between October 16, 2026 and November 9, 2026:
         </p>
       </div>
 
@@ -47,13 +47,13 @@ export const RelativeEquivalents: React.FC<RelativeEquivalentsProps> = ({ totalS
         {items.map((item) => (
           <div
             key={item.id}
-            className="border-2 border-black p-5 flex flex-col justify-between hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform"
+            className="border-2 border-black p-5 flex flex-col justify-between hover:translate-x-0.5 hover:-translate-y-0.5 transition-transform bg-white"
           >
             <div>
               <div className="flex items-center justify-between text-black mb-3">
                 <span className="p-1 border border-black">{getIcon(item.id)}</span>
                 <span className="text-[10px] font-mono font-bold uppercase text-neutral-500">
-                  REAL-TIME MATH
+                  FINAL STAT
                 </span>
               </div>
               <h3 className="font-bold text-sm text-black uppercase leading-snug">

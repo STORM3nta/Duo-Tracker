@@ -11,19 +11,21 @@ export interface TimeBreakdown {
   businessDays: number;
 }
 
-export interface SympathyMessage {
+export interface VictoryMessage {
   id: string;
   author: string;
   message: string;
   timestamp: string;
   upvotes: number;
+  tag?: string;
 }
 
 export interface Milestone {
   id: string;
-  label: string;
-  targetSeconds: number;
-  achieved: boolean;
-  dateReached?: string;
+  title: string;
+  seconds: number;
+  dateStr: string;
   description: string;
+  achieved: boolean;
+  isFinalArrival?: boolean;
 }

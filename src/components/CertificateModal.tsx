@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
-import { Award, Printer, Copy, Check, X } from 'lucide-react';
+import { Award, Printer, Copy, Check, X, ShieldCheck } from 'lucide-react';
 import { TimeBreakdown } from '../types';
 
 interface CertificateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  timeData: TimeBreakdown;
-  startTimeLabel: string;
+  waitRecord: TimeBreakdown;
 }
 
 export const CertificateModal: React.FC<CertificateModalProps> = ({
   isOpen,
   onClose,
-  timeData,
-  startTimeLabel,
+  waitRecord,
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -25,18 +23,19 @@ export const CertificateModal: React.FC<CertificateModalProps> = ({
 
   const certificateText = `
 ==============================================================
-   OFFICIAL CERTIFICATE OF PROTRACTED HARDWARE ANTICIPATION
+   OFFICIAL CERTIFICATE OF HARDWARE ACQUISITION & ENDURANCE
 ==============================================================
 Awarded to: EDDIE
-Product: Apple iPhone Duo (1TB · Deep Titanium)
-Order Timestamp: 10/16/2026 08:04 EST (${startTimeLabel})
+Device: Apple iPhone Duo (1TB · Space Black & Dual OLED)
+Order Inception: 10/16/2026 @ 08:04:00 EST
+Final Delivery: 11/09/2026 @ 14:48:00 EST
 
-TOTAL VERIFIED WAIT TIME:
-${timeData.days} Days, ${timeData.hours} Hours, ${timeData.minutes} Minutes, ${timeData.seconds} Seconds
-(${timeData.totalHours.toFixed(2)} Total Hours / ${timeData.businessDays} Business Days)
+TOTAL RECORDED WAIT DURATION:
+${waitRecord.days} Days, ${waitRecord.hours} Hours, ${waitRecord.minutes} Minutes, ${waitRecord.seconds} Seconds
+(${waitRecord.totalHours.toFixed(2)} Total Hours / ${waitRecord.businessDays} Courier Business Days)
 
-STATUS: STILL UNFULFILLED & PREPARING
-Issued with condolences by the Global Waiting Committee.
+DISPOSITION: FULLY DELIVERED & ACTIVATED
+Issued with admiration by the Global Waiting Committee.
 ==============================================================
   `.trim();
 
@@ -49,7 +48,6 @@ Issued with condolences by the Global Waiting Committee.
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white border-2 border-black w-full max-w-2xl shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] p-6 sm:p-10 relative">
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 border border-black p-1 text-black hover:bg-neutral-100 cursor-pointer"
@@ -57,43 +55,43 @@ Issued with condolences by the Global Waiting Committee.
           <X className="w-5 h-5" />
         </button>
 
-        {/* Certificate Border Design */}
+        {/* Certificate Inner Border */}
         <div className="border-4 border-double border-black p-6 sm:p-8 text-center bg-white">
-          <div className="w-12 h-12 mx-auto border-2 border-black flex items-center justify-center mb-4">
-            <Award className="w-6 h-6 text-black" />
+          <div className="w-12 h-12 mx-auto border-2 border-black flex items-center justify-center mb-4 bg-black text-white">
+            <Award className="w-6 h-6" />
           </div>
 
           <div className="text-[11px] font-mono uppercase tracking-[0.25em] text-neutral-600 mb-2">
-            Commonwealth of Unshipped Electronics
+            Commonwealth of Delivered Electronics
           </div>
 
           <h2 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-black mb-1">
-            Certificate of Exemplary Patience
+            Certificate of Victorious Delivery
           </h2>
           <div className="w-24 h-0.5 bg-black mx-auto mb-6"></div>
 
           <p className="text-xs font-mono text-neutral-700 max-w-md mx-auto mb-6 leading-relaxed">
-            This document solemnly attests that <span className="font-bold underline text-black">EDDIE</span> has faithfully endured unprecedented waiting following the order of the elusive:
+            This certifies that <span className="font-bold underline text-black">EDDIE</span> has victoriously endured and completed the historic wait for the revolutionary:
           </p>
 
-          <div className="border border-black py-3 px-4 bg-neutral-50 mb-6 inline-block">
+          <div className="border-2 border-black py-3 px-5 bg-neutral-50 mb-6 inline-block">
             <div className="font-mono text-sm font-bold text-black uppercase">
               Apple iPhone Duo (1TB · Space Black)
             </div>
-            <div className="text-[11px] font-mono text-neutral-500">
-              Order Date: October 16, 2026 @ 08:04:00 EST
+            <div className="text-[11px] font-mono text-neutral-600 mt-0.5">
+              Ordered: Oct 16, 2026 @ 08:04 EST · Delivered: Nov 9, 2026 @ 14:48 EST
             </div>
           </div>
 
           <div className="my-6">
             <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500 block mb-1">
-              Total Recorded Transit Delay
+              Final Certified Endurance Record
             </span>
             <div className="font-mono text-3xl sm:text-4xl font-black text-black tabular-nums">
-              {timeData.days}d {timeData.hours}h {timeData.minutes}m {timeData.seconds}s
+              {waitRecord.days}d {waitRecord.hours}h {waitRecord.minutes}m {waitRecord.seconds}s
             </div>
             <div className="text-xs font-mono text-neutral-600 mt-1">
-              ({timeData.businessDays} business courier days)
+              ({waitRecord.businessDays} business courier days · {waitRecord.totalHours.toFixed(1)} consecutive hours)
             </div>
           </div>
 
@@ -104,18 +102,21 @@ Issued with condolences by the Global Waiting Committee.
               <p className="text-neutral-600">The Internet &amp; Friends of Eddie</p>
             </div>
 
-            <div className="border-2 border-black p-2 rotate-[-4deg] text-center uppercase font-black tracking-widest text-xs">
-              ★ OFFICIAL DELAY ★
+            <div className="border-2 border-black p-2 rotate-[-3deg] text-center uppercase font-black tracking-widest text-xs bg-black text-white">
+              ★ DELIVERED &amp; SIGNED ★
             </div>
 
             <div className="text-right">
-              <p className="font-bold text-black uppercase">Current Disposition:</p>
-              <p className="text-neutral-600">Still Not Received</p>
+              <p className="font-bold text-black uppercase">Final Status:</p>
+              <p className="text-neutral-600 flex items-center justify-end gap-1 font-bold">
+                <ShieldCheck className="w-3 h-3 text-black" />
+                <span>IN HAND</span>
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Action Controls */}
+        {/* Controls */}
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 pt-2">
           <button
             onClick={handleCopyText}
